@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Vayzy Creative Studio — Transitions Pack</title>
+    <meta name="description" content="Transition video assets from Vayzy Creative Studio." />
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Poppins:wght@300;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        @font-face {
+            font-family: 'Ethnocentric';
+            src: url('assets/fonts/Ethnocentric.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        :root {
+            --bg: #0b0f14;
+            --gold: #f6c000;
+            --muted: #cbd5e1;
+            --radius: 14px;
+            --shadow: 0 10px 30px rgba(2, 6, 23, 0.6);
+            --max-width: 1800px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Poppins, Montserrat, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+            background: var(--bg);
+            color: var(--muted);
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            opacity: 0;
+            animation: fadeIn 1s ease forwards;
+        }
+
+        .bg-media {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .bg-media video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.5;
+        }
+
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(3, 6, 9, 0.4), rgba(3, 6, 9, 0.7));
+            z-index: -1;
+        }
+
+        .site {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 28px 40px;
+            flex: 1;
+            width: 100%;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 0;
+            width: 100%;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .brand h1 {
+            font-family: "Ethnocentric", sans-serif;
+            font-weight: 700;
+            color: var(--gold);
+            letter-spacing: 1px;
+            font-size: 26px;
+            margin: 0;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+
+        .nav-right a {
+            color: var(--muted);
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .nav-right a:hover {
+            color: var(--gold);
+        }
+
+        .hero {
+            padding: 80px 0 60px;
+            text-align: center;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .hero h2 {
+            font-size: 46px;
+            margin: 0;
+            color: var(--gold);
+            font-family: Montserrat, sans-serif;
+        }
+
+        .hero p {
+            max-width: 800px;
+            margin: 20px auto 0;
+            color: #cbd5e1;
+            font-size: 1.2rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+            gap: 28px;
+            width: 100%;
+            margin: 0 auto 60px;
+        }
+
+        .card {
+            background: rgba(15, 23, 32, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform .3s, box-shadow .3s;
+            position: relative;
+            cursor: pointer;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: var(--radius);
+            padding: 2px;
+            background: transparent;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            z-index: 1;
+            pointer-events: none;
+            transition: background 0.3s, filter 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 18px 40px rgba(2, 6, 23, 0.8);
+        }
+
+        .card:hover::after {
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.1));
+            filter: blur(8px);
+        }
+
+        .card video {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            display: block;
+            border-radius: 0;
+            transition: opacity 0.3s;
+        }
+
+        .card-metadata {
+            padding: 15px 20px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title {
+            margin: 0;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+
+        .card-description {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin: 0;
+        }
+
+        .card-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: Poppins;
+            transition: background 0.3s, transform 0.1s, border-color 0.3s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+            border-color: #fff;
+        }
+
+        .action-btn i {
+            font-size: 1em;
+            color: #fff;
+        }
+
+        .action-btn.collected {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: #0ff;
+            color: #0ff;
+        }
+
+        .action-btn.collected i {
+            color: #0ff;
+        }
+
+        .action-btn.collected:hover {
+            background: rgba(0, 255, 255, 0.3);
+        }
+
+        .nofiles {
+            text-align: center;
+            color: #aaa;
+            font-size: 1.2rem;
+            margin: 80px 0;
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.92);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .overlay.active {
+            display: flex;
+        }
+
+        .overlay video {
+            max-width: 90%;
+            max-height: 80%;
+            border-radius: var(--radius);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: #fff;
+            padding: 10px 18px;
+            font-weight: 700;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-family: Poppins;
+            box-shadow: var(--shadow);
+            z-index: 1001;
+            transition: background 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        footer {
+            width: 100%;
+            background: #0d0d0d;
+            padding: 20px 0;
+            text-align: center;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        footer a {
+            color: #FFD700;
+            margin: 0 10px;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0 }
+            to { opacity: 1 }
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr !important;
+                gap: 18px;
+            }
+            .card video { height: 200px; }
+            .hero h2 { font-size: 28px !important; }
+            header { flex-direction: column; align-items: flex-start; gap: 10px; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-media" aria-hidden="true">
+        <video autoplay muted loop playsinline src="assets/videos/background.mp4"></video>
+    </div>
+    <div class="bg-layer" aria-hidden="true"></div>
+
+    <div class="site">
+        <header>
+            <div class="brand">
+                <img src="assets/images/mylogo.jpg" alt="Vayzy logo">
+                <div>
+                    <h1>VAYZY</h1>
+                    <div style="font-size:13px;color:#93a4b5; margin-top:2px; font-family:Poppins">
+                        Creative assets for creators
+                    </div>
+                </div>
+            </div>
+            <div class="nav-right">
+                <a href="index.html">Home</a>
+            </div>
+        </header>
+
+        <section class="hero">
+            <h2>Transitions Pack</h2>
+            <p>Browse and preview high-quality video transitions for your creative video edits.</p>
+        </section>
+
+        <section id="videoGrid" class="grid" style="display:none;"></section>
+        <div id="nofiles" class="nofiles" style="display:none;">No files uploaded yet</div>
+    </div>
+
+    <div class="overlay" id="overlay">
+        <button class="back-btn" onclick="closeOverlay()">Back</button>
+        <video id="overlayVideo" controls autoplay></video>
+    </div>
+
+    <footer>
+        <p>© 2025 Vayzy Creative Studio | All Rights Reserved</p>
+        <p>
+            <a href="#">@vayzycreativestudio</a> |
+            <a href="#">Contact us</a> |
+            <a href="#">Free downloads</a>
+        </p>
+    </footer>
+
+    <script>
+        // --- ELEMENT REFERENCES ---
+        const videoGrid = document.getElementById("videoGrid");
+        const noFilesMsg = document.getElementById("nofiles");
+        const overlay = document.getElementById("overlay");
+        const overlayVideo = document.getElementById("overlayVideo");
+        
+        const COLLECTION_KEY_TRANSITIONS = 'vayzy_collection_transitions';
+        const supabaseBaseUrl = "https://ujoqamgrtbrkvtxotbxp.supabase.co/storage/v1/object/public/transitions/";
+        const totalTransitions = 1; 
+
+        // --- UTILITY FUNCTIONS (Fixes ReferenceErrors) ---
+        function getPersistentData(key, defaultValue) {
+            const data = localStorage.getItem(key);
+            return data ? JSON.parse(data) : defaultValue;
+        }
+
+        function savePersistentData(key, value) {
+            localStorage.setItem(key, JSON.stringify(value));
+        }
+
+        function openOverlay(src) {
+            overlayVideo.src = src;
+            overlay.classList.add("active");
+            document.body.style.overflow = "hidden"; // Prevent scrolling
+        }
+
+        function closeOverlay() {
+            overlay.classList.remove("active");
+            overlayVideo.pause();
+            overlayVideo.src = "";
+            document.body.style.overflow = "auto";
+        }
+
+        // --- Video Array Generation ---
+        const validVideos = [];
+        for (let i = 1; i <= totalTransitions; i++) {
+            validVideos.push({
+                id: `trans-${i}`,
+                src: `${supabaseBaseUrl}transition${i}.mp4`,
+                name: `Transition Pack #${i}`
+            });
+        }
+
+        // --- Video Rendering Logic ---
+        function renderVideos() {
+            videoGrid.innerHTML = "";
+            if (validVideos.length === 0) {
+                noFilesMsg.style.display = "block";
+                videoGrid.style.display = "none";
+            } else {
+                noFilesMsg.style.display = "none";
+                videoGrid.style.display = "grid";
+
+                const videoCollection = getPersistentData(COLLECTION_KEY_TRANSITIONS, {});
+
+                validVideos.forEach(video => {
+                    const card = document.createElement("div");
+                    card.className = "card";
+                    card.id = `card-${video.id}`;
+
+                    const vid = document.createElement("video");
+                    vid.src = video.src;
+                    vid.autoplay = true;
+                    vid.loop = true;
+                    vid.muted = true;
+                    vid.playsInline = true;
+                    vid.playbackRate = 2.0; 
+                    card.appendChild(vid);
+
+                    const metadata = document.createElement("div");
+                    metadata.className = "card-metadata";
+
+                    const title = document.createElement("div");
+                    title.className = "card-title";
+                    title.textContent = video.name;
+                    metadata.appendChild(title);
+
+                    const desc = document.createElement("p");
+                    desc.className = "card-description";
+                    desc.textContent = "Professional Video Transition Asset";
+                    metadata.appendChild(desc);
+
+                    const actions = document.createElement("div");
+                    actions.className = "card-actions";
+
+                    const collectBtn = document.createElement("button");
+                    let isCollected = !!videoCollection[video.id];
+                    collectBtn.className = "action-btn collect-btn";
+
+                    const updateCollectButton = (collected) => {
+                        if (collected) {
+                            collectBtn.innerHTML = '<i class="fas fa-star"></i> Collected';
+                            collectBtn.classList.add('collected');
+                        } else {
+                            collectBtn.innerHTML = '<i class="far fa-star"></i> Collect';
+                            collectBtn.classList.remove('collected');
+                        }
+                    };
+                    updateCollectButton(isCollected);
+
+                    collectBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        let currentCollection = getPersistentData(COLLECTION_KEY_TRANSITIONS, {});
+                        if (!!currentCollection[video.id]) {
+                            delete currentCollection[video.id];
+                            updateCollectButton(false);
+                        } else {
+                            currentCollection[video.id] = {
+                                url: video.src,
+                                type: 'transition',
+                                title: video.name
+                            };
+                            updateCollectButton(true);
+                        }
+                        savePersistentData(COLLECTION_KEY_TRANSITIONS, currentCollection);
+                    });
+                    actions.appendChild(collectBtn);
+
+                    const downloadLink = document.createElement("a");
+                    downloadLink.href = video.src;
+                    downloadLink.download = `Vayzy_Transition_${video.id}.mp4`;
+                    downloadLink.className = "action-btn download-btn";
+                    downloadLink.innerHTML = '<i class="fas fa-download"></i> Download';
+                    downloadLink.addEventListener('click', (e) => e.stopPropagation());
+                    actions.appendChild(downloadLink);
+
+                    metadata.appendChild(actions);
+                    card.appendChild(metadata);
+
+                    card.addEventListener("click", (e) => {
+                        if (!e.target.closest('.action-btn')) {
+                            openOverlay(video.src);
+                        }
+                    });
+
+                    videoGrid.appendChild(card);
+                });
+            }
+        }
+
+        // Initialize
+        renderVideos();
+    </script>
+</body>
+</html>

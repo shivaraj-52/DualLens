@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Vayzy Creative Studio — Videos</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Poppins:wght@300;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+
+    <style>
+        @font-face {
+            font-family: 'Ethnocentric';
+            /* Note: Ensure this font path is correct relative to the HTML file or use a web-safe font. */
+            src: url('assets/fonts/Ethnocentric.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        :root {
+            --bg: #0b0f14;
+            --gold: #f6c000;
+            --muted: #cbd5e1;
+            --radius: 14px;
+            --shadow: 0 10px 30px rgba(2, 6, 23, 0.6);
+            --max-width: 1200px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Poppins, Montserrat, sans-serif;
+            background: var(--bg);
+            color: var(--muted);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+            /* Added base font size for consistency */
+            font-size: 16px; 
+        }
+
+        .bg-media {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .bg-media video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.5;
+        }
+
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(3, 6, 9, 0.4), rgba(3, 6, 9, 0.7));
+            z-index: -1;
+        }
+
+        .container {
+            /* Container to center content and apply padding */
+            max-width: var(--max-width);
+            width: 90%;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand img {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .brand h1 {
+            font-family: "Ethnocentric", sans-serif;
+            font-weight: 700;
+            color: var(--gold);
+            font-size: 22px;
+            margin: 0;
+        }
+
+        .nav-right a {
+            color: var(--muted);
+            font-weight: 600;
+            text-decoration: none;
+            margin-left: 10px;
+            transition: color 0.2s;
+        }
+        
+        .nav-right a:hover {
+            color: var(--gold);
+        }
+
+        .hero {
+            padding: 90px 0 40px;
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-size: 44px;
+            margin: 0;
+            color: var(--gold);
+        }
+
+        .hero p {
+            max-width: 820px;
+            margin: 16px auto 22px;
+            color: #cbd5e1;
+            font-size: 1.05rem;
+        }
+
+        /* CSS COLUMNS (Masonry) FOR TIGHT PACKING */
+        .grid {
+            column-count: 3;
+            column-gap: 20px;
+            padding: 20px 0;
+        }
+
+        .card {
+            position: relative;
+            border-radius: var(--radius);
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.03);
+            box-shadow: var(--shadow);
+            /* Masonry flow properties */
+            display: inline-block;
+            width: 100%;
+            margin-bottom: 20px;
+            break-inside: avoid;
+            transition: box-shadow 0.3s;
+        }
+
+        .card:hover {
+            box-shadow: 0 10px 40px rgba(246, 192, 0, 0.3);
+        }
+
+        /* ASPECT RATIO HACK: Ensures the card resizes to the video's ratio */
+        .card-content-wrapper {
+            position: relative;
+            width: 100%;
+            height: 0;
+            /* The initial padding-top is a guess until JS sets --aspect-ratio */
+            padding-top: var(--aspect-ratio, 56.25%);
+            overflow: hidden;
+        }
+
+        /* Video and Placeholder must fill the wrapper */
+        .card video,
+        .card-loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .card-content-wrapper:hover video {
+            transform: scale(1.05);
+        }
+
+        .card-loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #1a202c;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .card-loading i {
+            font-size: 3rem;
+            color: var(--gold);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+        }
+
+
+        /* Video actions container */
+        .video-actions {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.4);
+            border-bottom-left-radius: var(--radius);
+            border-bottom-right-radius: var(--radius);
+            backdrop-filter: blur(5px);
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
+            color: #fff;
+            cursor: pointer;
+            user-select: none;
+            transition: color 0.2s, transform 0.2s;
+        }
+
+        .action-btn:hover {
+            color: var(--gold);
+            transform: translateY(-2px);
+        }
+
+        .action-btn i {
+            font-size: 1.2rem;
+        }
+
+        /* Removed text from Collect button, adjusting spacing */
+        .collect-btn {
+            gap: 0;
+            padding: 0 10px;
+        }
+
+        .like-btn i {
+            color: var(--muted);
+            transition: color 0.2s;
+        }
+
+        .like-btn.liked i {
+            color: #ff4b5c;
+        }
+
+        .collect-btn i {
+            color: var(--muted);
+            transition: color 0.2s;
+        }
+
+        .collect-btn.collected i {
+            color: var(--gold) !important;
+        }
+
+
+        .fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .fullscreen video {
+            max-width: 95%;
+            max-height: 95%;
+            border-radius: var(--radius);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0
+            }
+
+            to {
+                opacity: 1
+            }
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(var(--drift-x), -80px) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .floating-heart {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            color: #ff4b5c;
+            pointer-events: none;
+            animation: floatUp 1s ease forwards;
+            z-index: 10;
+        }
+
+        /* Media queries for Masonry layout */
+        @media (max-width: 900px) {
+            .grid {
+                column-count: 2;
+                column-gap: 15px; /* Slight adjustment for smaller screens */
+            }
+        }
+
+        @media (max-width: 600px) {
+            .grid {
+                column-count: 1;
+                column-gap: 0;
+            }
+            .container {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bg-media" aria-hidden="true">
+        <video autoplay muted loop playsinline src="https://ujoqamgrtbrkvtxotbxp.supabase.co/storage/v1/object/public/videos/background.mp4"></video>
+    </div>
+    <div class="bg-layer" aria-hidden="true"></div>
+
+    <div class="container">
+        <header>
+            <div class="brand">
+                <img src="assets/images/mylogo.jpg" alt="Vayzy logo">
+                <div>
+                    <h1>VAYZY</h1>
+                    <div style="font-size:12px;color:#93a4b5;">Creative assets for creators</div>
+                </div>
+            </div>
+            <div class="nav-right">
+                <a href="index.html">Home</a>
+                
+            </div>
+        </header>
+
+        <section class="hero">
+            <h2>Videos</h2>
+            <p>Click a video for fullscreen ❤️</p>
+        </section>
+
+        <section class="collections">
+            <div class="grid" id="videoGrid"></div>
+        </section>
+    </div>
+
+    <div id="fullscreenOverlay" class="fullscreen" style="display:none;">
+        <video controls autoplay></video>
+    </div>
+
+    <script>
+        // --- CORE ELEMENTS ---
+        const videoGrid = document.getElementById('videoGrid');
+        const fullscreenOverlay = document.getElementById('fullscreenOverlay');
+        const fullscreenVideo = fullscreenOverlay.querySelector('video');
+
+        // --- CONFIGURATION ---
+        const videoPathPrefix = 'https://swfpcgectlananmmbgzv.supabase.co/storage/v1/object/public/videos/';
+        
+        // Note: Assuming you have a 'posters' bucket/folder on Supabase for the thumbnails.
+        // If your posters are also in the 'videos' bucket, change the word 'posters' below to 'videos'.
+        const posterPathPrefix = 'https://swfpcgectlananmmbgzv.supabase.co/storage/v1/object/public/posters/';
+        
+        // Use consistent, unique keys for local storage
+        const COLLECTION_KEY_VIDEOS = 'vayzy_collection_videos';
+        const LIKED_KEY = 'vayzy_liked_assets'; 
+
+        // ⭐⭐⭐ VIDEO COUNT CONFIGURATION BOX ⭐⭐⭐
+        // Set the total number of videos named video1.mp4, video2.mp4, etc.
+        const totalVideos = 9;
+        // ⭐⭐⭐ END CONFIGURATION BOX ⭐⭐⭐
+
+
+        // --- LOCAL STORAGE UTILITIES ---
+        function getPersistentData(key, defaultValue) {
+            try {
+                const data = JSON.parse(localStorage.getItem(key));
+                if (data === null || data === undefined) {
+                    return defaultValue;
+                }
+                
+                // Compatibility layer for old array-based storage for the collection
+                if (key === COLLECTION_KEY_VIDEOS && Array.isArray(data)) {
+                    console.warn("Converting old video collection array to new object format.");
+                    const newObject = {};
+                    data.forEach(videoName => {
+                        // Assuming videoName is 'videoX.mp4'
+                        newObject[videoName.replace(/\.mp4$/, "")] = { url: videoPathPrefix + videoName, source: window.location.pathname };
+                    });
+                    // Save the converted data immediately
+                    savePersistentData(key, newObject); 
+                    return newObject;
+                }
+                
+                return data;
+
+            } catch (e) {
+                console.error(`Failed to parse localStorage data for key: ${key}`, e);
+                return defaultValue;
+            }
+        }
+
+        function savePersistentData(key, data) {
+            try {
+                localStorage.setItem(key, JSON.stringify(data));
+            } catch (e) {
+                console.error(`Failed to save to localStorage for key: ${key}`, e);
+            }
+        }
+
+        // Load collections and liked items
+        const videoCollections = getPersistentData(COLLECTION_KEY_VIDEOS, {});
+        const likedAssets = getPersistentData(LIKED_KEY, {});
+
+
+        function manageCollection(assetId, assetUrl, add) {
+            if (add) {
+                // Ensure the collection object is updated with the video's details
+                videoCollections[assetId] = {
+                    url: assetUrl,
+                    source: window.location.pathname
+                };
+            } else {
+                delete videoCollections[assetId];
+            }
+            savePersistentData(COLLECTION_KEY_VIDEOS, videoCollections);
+        }
+
+        // --- FULLSCREEN LOGIC (Kept as is) ---
+        function openFullscreen(src) {
+            fullscreenOverlay.style.display = 'flex';
+            fullscreenVideo.src = src;
+            fullscreenVideo.play();
+            // Use replaceState to avoid history stack issues on hash change
+            history.pushState({ fullscreen: true }, "", "#fullscreen");
+        }
+        
+        function closeFullscreen() {
+            // Only proceed if the overlay is visible
+            if (fullscreenOverlay.style.display === 'flex') {
+                fullscreenOverlay.style.display = 'none';
+                fullscreenVideo.pause();
+                fullscreenVideo.src = '';
+                
+                // Only go back if the hash was set by openFullscreen
+                if (window.location.hash === "#fullscreen") {
+                     history.back();
+                } else {
+                    window.location.hash = ''; // Clear hash if it exists
+                }
+            }
+        }
+        
+        // Clicks on the overlay close it
+        fullscreenOverlay.addEventListener('click', closeFullscreen); 
+
+        // Keyboard support (Escape key)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "Escape" && fullscreenOverlay.style.display === 'flex') {
+                closeFullscreen();
+            }
+        });
+
+        // Handle browser back button/popstate
+        window.addEventListener('popstate', () => {
+             // If the state changes and the overlay is visible, close it
+             if (fullscreenOverlay.style.display === 'flex' && window.location.hash !== "#fullscreen") {
+                closeFullscreen();
+            }
+        });
+
+
+        // --- VIDEO CARD CREATION AND LAZY LOADING ---
+        /**
+        * @param {string} videoName - The filename (e.g., 'video1.mp4')
+        */
+        function createVideoCard(videoName) {
+            const videoSrc = videoPathPrefix + videoName;
+            // The unique ID for the asset (e.g., 'video1')
+            const videoId = videoName.replace(/\.mp4$/, "");
+
+            // Derives poster filename from video name (e.g., video1.mp4 -> video1.jpg)
+            const posterName = videoId + '.jpg';
+            const posterSrc = posterPathPrefix + posterName;
+
+            // Check state using the new object structure
+            let isCollected = !!videoCollections[videoId];
+            // Check liked status and ensure it's an object structure
+            let isLiked = likedAssets[videoId] && likedAssets[videoId].liked; 
+
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            // Create the wrapper for the aspect ratio hack
+            const contentWrapper = document.createElement('div');
+            contentWrapper.className = 'card-content-wrapper';
+            card.appendChild(contentWrapper);
+
+            // 1. Create a placeholder/loading state 
+            const placeholder = document.createElement('div');
+            placeholder.className = 'card-loading';
+            placeholder.innerHTML = `<i class="fas fa-play-circle"></i>`;
+            placeholder.style.backgroundImage = `url(${posterSrc})`;
+            contentWrapper.appendChild(placeholder);
+
+
+            // 2. Create the Video Element 
+            const videoEl = document.createElement('video');
+            videoEl.muted = true;
+            videoEl.loop = true;
+            videoEl.playsInline = true;
+            videoEl.playbackRate = 4;
+            videoEl.preload = 'metadata'; // Hint browser to fetch metadata faster
+
+
+            // --- DYNAMIC ASPECT RATIO DETECTION ---
+            videoEl.addEventListener('loadedmetadata', () => {
+                // Calculation: (Height / Width) * 100 for percentage padding
+                const ratio = (videoEl.videoHeight / videoEl.videoWidth) * 100;
+                // Set the CSS variable to the calculated aspect ratio percentage
+                contentWrapper.style.setProperty('--aspect-ratio', `${ratio}%`);
+
+                // Ensure placeholder is removed and video is visible/playing
+                if (contentWrapper.contains(placeholder)) {
+                    placeholder.remove();
+                }
+                contentWrapper.prepend(videoEl);
+                videoEl.play();
+            });
+
+
+            videoEl.addEventListener('error', () => {
+                console.error(`Error loading video: ${videoSrc}`);
+                if (contentWrapper.contains(placeholder)) {
+                    placeholder.innerHTML = `<i class="fas fa-exclamation-triangle"></i>`;
+                    // On error, revert to default aspect ratio if metadata load failed
+                    contentWrapper.style.setProperty('--aspect-ratio', `56.25%`); 
+                }
+            });
+
+            // Fullscreen Handler on the content wrapper
+            contentWrapper.addEventListener('click', () => {
+                openFullscreen(videoSrc);
+            });
+
+            // 3. Create Actions (Like/Collect/Share)
+            const actions = document.createElement('div');
+            actions.className = 'video-actions';
+
+            // --- LIKE BUTTON ---
+            const likeBtn = document.createElement('div');
+            likeBtn.className = `action-btn like-btn ${isLiked ? 'liked' : ''}`;
+            likeBtn.innerHTML = `<i class="fas fa-heart"></i>`;
+
+            likeBtn.addEventListener('click', e => {
+                e.stopPropagation();
+                isLiked = !isLiked;
+
+                // Initialize object entry if it doesn't exist
+                if (!likedAssets[videoId]) {
+                    likedAssets[videoId] = {};
+                }
+
+                // Update liked state
+                likedAssets[videoId].liked = isLiked;
+                savePersistentData(LIKED_KEY, likedAssets);
+
+                if (isLiked) {
+                    likeBtn.classList.add('liked');
+                    // Floating heart animation
+                    const heart = document.createElement('div');
+                    heart.className = 'floating-heart';
+                    heart.innerHTML = '❤';
+                    const drift = (Math.random() * 60 - 30) + 'px';
+                    heart.style.setProperty('--drift-x', drift);
+                    card.appendChild(heart);
+                    heart.addEventListener('animationend', () => heart.remove());
+                } else {
+                    likeBtn.classList.remove('liked');
+                }
+            });
+
+
+            // --- COLLECT BUTTON ---
+            const collectBtn = document.createElement('div');
+            collectBtn.className = `action-btn collect-btn ${isCollected ? 'collected' : ''}`;
+            const iconColor = isCollected ? 'var(--gold)' : 'var(--muted)';
+            collectBtn.innerHTML = `<i class="fas fa-star" style="color: ${iconColor};"></i>`;
+
+            collectBtn.addEventListener('click', e => {
+                e.stopPropagation();
+                isCollected = !isCollected;
+
+                // Call the updated manageCollection with ID and URL
+                manageCollection(videoId, videoSrc, isCollected);
+
+                const icon = collectBtn.querySelector('i');
+                if (isCollected) {
+                    collectBtn.classList.add('collected');
+                    icon.style.color = 'var(--gold)';
+                    // alert('Video added to your collection!'); // Optional: removed alert for smoother UX
+                } else {
+                    collectBtn.classList.remove('collected');
+                    icon.style.color = 'var(--muted)';
+                    // alert('Video removed from your collection.'); // Optional: removed alert for smoother UX
+                }
+            });
+
+            // --- SHARE BUTTON ---
+            const shareBtn = document.createElement('div');
+            shareBtn.className = 'action-btn share-btn';
+            shareBtn.innerHTML = `<i class="fas fa-share-alt"></i> Share`;
+
+            shareBtn.addEventListener('click', e => {
+                e.stopPropagation();
+                if (navigator.share) {
+                    navigator.share({
+                        title: `Vayzy Creative Studio - ${videoName}`,
+                        text: `Check out this awesome video from Vayzy Creative Studio!`,
+                        url: window.location.href
+                    }).catch(error => console.error('Share failed:', error));
+                } else {
+                    // Fallback: Copy URL to clipboard
+                    const dummy = document.createElement('input');
+                    document.body.appendChild(dummy);
+                    dummy.value = window.location.href;
+                    dummy.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(dummy);
+                    alert("Link copied to clipboard!");
+                }
+            });
+
+            actions.appendChild(likeBtn);
+            actions.appendChild(collectBtn);
+            actions.appendChild(shareBtn);
+            card.appendChild(actions);
+
+            // 4. Lazy Loading using Intersection Observer
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Set the source only when in view
+                        videoEl.src = videoSrc;
+                        // videoEl.load() is implicit on setting src, but can be called explicitly
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                rootMargin: '100px 0px',
+                threshold: 0.01
+            });
+
+            observer.observe(card);
+
+            return card;
+        }
+
+        // --- SHUFFLING UTILITY (Kept as is but disabled usage below) ---
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+
+        // --- INITIALIZE VIDEO GRID ---
+        (function initializeGrid() {
+            // 1. Create an array of indices [1, 2, 3, ..., N]
+            const videoIndices = Array.from({ length: totalVideos }, (_, i) => i + 1);
+
+            // 2. Shuffle disabled to display sequential instead of random files
+            // shuffleArray(videoIndices);
+
+            // 3. Create cards using the ordered indices to form filenames
+            videoIndices.forEach(index => {
+                const videoName = `video${index}.mp4`;
+                const card = createVideoCard(videoName);
+                videoGrid.appendChild(card);
+            });
+        })(); 
+    </script>
+</body>
+
+</html>

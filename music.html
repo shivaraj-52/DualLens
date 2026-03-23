@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Vayzy Creative Studio — Select Your Vibe</title>
+    <meta name="description" content="Vayzy — music & mashups for creators with reactive visuals and waveforms." />
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        @font-face {
+            font-family: 'Ethnocentric';
+            src: url('assets/fonts/Ethnocentric.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        :root{
+            --bg:#0b0f14;
+            --card:#0f1720;
+            --gold:#f6c000;
+            --muted:#cbd5e1;
+            --shadow: 0 10px 30px rgba(2,6,23,0.6);
+            --max-width:1200px;
+            --glow: 0;
+        }
+        *{box-sizing:border-box}
+        html,body{height:100%; overflow-x: hidden;}
+        body{
+            margin:0;
+            font-family:Poppins, Montserrat, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+            background:var(--bg);
+            color:var(--muted);
+            display:flex;
+            flex-direction:column;
+            min-height:100vh;
+            opacity:0;
+            animation: fadeIn .6s ease forwards;
+            transition: opacity .4s ease, transform .4s ease; /* Ensure transition for fade-out */
+        }
+        
+        /* Smooth Page Transition CSS */
+        .page-fade-out {
+            opacity: 0 !important;
+            transform: translateY(30px) !important;
+        }
+
+        /* reactive background video - uses --glow */
+        .bg-media{position:fixed; inset:0; z-index:-2; overflow:hidden;}
+        .bg-media video{
+            position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.45;
+            filter: brightness(0.65) saturate(1); /* No glow effect on this page */
+        }
+        .bg-layer{position:fixed; inset:0; background:linear-gradient(180deg, rgba(3,6,9,0.35), rgba(3,6,9,0.72)); z-index:-1;}
+        .site{max-width:var(--max-width); margin:0 auto; padding:28px 22px; flex:1; width:100%;}
+
+        header{display:flex; align-items:center; justify-content:space-between; gap:18px; padding:14px 0;}
+        .brand{display:flex; align-items:center; gap:14px}
+        .brand img{width:56px; height:56px; border-radius:50%; object-fit:cover;}
+        .brand h1{font-family:"Ethnocentric", sans-serif; font-weight:700; color:var(--gold); font-size:22px; margin:0;}
+        .brand h1 { margin-bottom: 0px !important; } 
+        .nav-right a{color:var(--muted); font-weight:600; text-decoration:none}
+        .nav-right .sep{color:var(--muted); margin:0 8px; user-select:none}
+
+        .hero{padding:70px 0 24px; text-align:center}
+        .hero h2{font-size:42px; margin:0; color:var(--gold);}
+        .chooser{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:22px; max-width:1000px; margin:22px auto 0;}
+        .choose-card{
+            background:rgba(255,255,255,0.04);
+            border-radius:18px;
+            padding:26px;
+            text-align:center;
+            box-shadow:var(--shadow);
+            cursor:pointer;
+            transition: transform 0.22s ease, box-shadow .22s ease, filter .22s ease;
+        }
+        .choose-card:hover{
+            transform:translateY(-8px) scale(1.03);
+            box-shadow:0 28px 80px rgba(246,192,0,0.28);
+            filter: drop-shadow(0 8px 30px rgba(246,192,0,0.15));
+            border-color: rgba(246,192,0,0.18);
+        }
+        .choose-card h3{margin:0; color:#fff; font-weight:800; font-size:18px}
+        
+        /* Footer styles */
+        footer{width:100%; background:#0d0d0d; padding:20px 0; text-align:center; color:#fff; font-size:14px;}
+        footer a{color:#FFD700; margin:0 10px; text-decoration:none; font-weight:500;}
+
+        @keyframes fadeIn {from{opacity:0} to{opacity:1}}
+    </style>
+</head>
+<body>
+    <div class="bg-media" aria-hidden="true"><video autoplay muted loop playsinline src="assets/videos/background.mp4"></video></div>
+    <div class="bg-layer" aria-hidden="true"></div>
+
+    <div class="site">
+        <header>
+            <div class="brand">
+                <img src="assets/images/mylogo.jpg" alt="Vayzy logo">
+                <div>
+                    <h1>VAYZY</h1>
+                    <div style="font-size:12px;color:#93a4b5;">Music & Mashups</div>
+                </div>
+            </div>
+            <div class="nav-right">
+                <a href="index.html">Home</a><span class="sep">
+            </div>
+        </header>
+
+        <section class="hero">
+            <h2>Select Your Vibe</h2>
+            <div class="chooser">
+                <div class="choose-card" data-target="mashup.html"><h3>Mashups</h3></div>
+                <div class="choose-card" data-target="backgroundmusic.html"><h3>Background Music</h3></div>
+                <div class="choose-card" data-target="sfx.html"><h3>Sound Effects</h3></div>
+            </div>
+        </section>
+    </div> 
+    
+    <footer>
+        <p>© 2025 Vayzy Creative Studio | All Rights Reserved</p>
+        <p>
+            <a href="#">INSTAGRAM - vayzy_creative_studio</a> |
+            <a href="https://www.youtube.com/@VayzyCreativeStudio">YOUTUBE - @VayzyCreativeStudio</a> |
+            <a href="conact.html">Contact us</a>
+        </p>
+    </footer>
+
+    <script>
+        document.querySelectorAll('.choose-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const targetUrl = this.getAttribute('data-target');
+                if (targetUrl) {
+                    // Apply the fade-out class to the body
+                    document.body.classList.add('page-fade-out');
+                    
+                    // Wait for the fade-out animation (400ms is the CSS transition time)
+                    setTimeout(() => {
+                        window.location.href = targetUrl;
+                    }, 400); 
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Vayzy Creative Studio — Fonts</title>
+    <meta name="description" content="Download exclusive fonts and test them live." />
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <style>
+        /* --- Load Ethnocentric Font --- */
+        @font-face {
+            font-family: 'Ethnocentric';
+            src: url('assets/fonts/Ethnocentric.otf') format('opentype');
+            font-weight: normal; font-style: normal;
+        }
+
+        :root{
+            --bg:#0b0f14;
+            --card:#0f1720;
+            --gold:#f6c000;
+            --muted:#cbd5e1;
+            --radius:14px;
+            --shadow: 0 10px 30px rgba(2,6,23,0.6);
+            --max-width:1200px;
+        }
+        *{box-sizing:border-box}
+        body{
+            margin:0; 
+            font-family:Poppins, Montserrat, system-ui; 
+            background:var(--bg); 
+            color:var(--muted); 
+            display:flex; flex-direction:column; min-height:100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- Standard Layout --- */
+        .bg-media{position:fixed; inset:0; z-index:-2; overflow:hidden;}
+        .bg-media video{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.5;} 
+        .bg-layer{position:fixed; inset:0; background:linear-gradient(180deg, rgba(3,6,9,0.4), rgba(3,6,9,0.9)); z-index:-1}
+        .site{max-width:var(--max-width); margin:0 auto; padding:20px; flex:1; width:100%;}
+
+        /* Header updated with Ethnocentric font */
+        header{display:flex; align-items:center; justify-content:space-between; padding:14px 0; flex-wrap: wrap; gap: 20px;}
+        .brand{display:flex; align-items:center; gap:14px}
+        .brand img{width:50px; height:50px; border-radius:50%; object-fit:cover;}
+        /* FIX: Using Ethnocentric font here */
+        .brand h1{font-family:"Ethnocentric", sans-serif; font-weight:normal; color:var(--gold); letter-spacing:1px; font-size:22px; margin:0;}
+        .nav-right { display: flex; gap: 15px; }
+        .nav-right a{color:var(--muted); font-weight:600; text-decoration:none; font-size:14px;}
+
+        /* --- Controls Section (Search) --- */
+        .controls-area {
+            margin: 40px auto 30px;
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 16px 24px;
+            border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 25px;
+            outline: none; transition: 0.3s; font-family: Poppins;
+        }
+        .search-box:focus { border-color: var(--gold); box-shadow: 0 0 15px rgba(246, 192, 0, 0.2); }
+        
+        /* --- TYPE TESTER VIEW (Typing Interface) --- */
+        .view-section { display: block; animation: fadeIn 0.5s ease; } /* Always active */
+
+        .tester-input-container {
+            position: sticky; top: 20px; z-index: 50;
+            background: rgba(11, 15, 20, 0.95);
+            padding: 20px; border-radius: 16px;
+            border: 1px solid var(--gold);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+        .type-input {
+            width: 100%; background: transparent; border: none;
+            color: #fff; font-size: 24px; font-family: inherit;
+            text-align: center; outline: none;
+        }
+        .type-input::placeholder { color: rgba(255,255,255,0.3); }
+        .type-input:focus::placeholder { opacity: 0; }
+
+        .tester-list { display: flex; flex-direction: column; gap: 20px; }
+        .tester-item {
+            background: rgba(255,255,255,0.02);
+            padding: 25px; border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .tester-meta { 
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; 
+            color: var(--gold); font-size: 0.85rem; letter-spacing: 1px; 
+            padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        /* New Button Container for Download and Collection */
+        .tester-actions { 
+            display: flex; gap: 10px; justify-content: flex-end; 
+            margin-top: 10px; 
+        }
+
+        /* Base Button Style for Icons Only */
+        .tester-btn {
+            background: transparent; 
+            border: none; /* Removed border */
+            cursor: pointer; 
+            font-size: 1.8rem; /* Increased size for icon */
+            transition: 0.3s;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            width: 45px; /* Fixed width */
+            height: 45px; /* Fixed height */
+            border-radius: 50%; /* Make it round */
+            text-decoration: none; /* for anchor tag */
+            color: var(--muted); /* Default icon color */
+        }
+        .tester-btn:hover { 
+            background: rgba(255,255,255,0.1); /* Subtle hover background */
+            transform: scale(1.1);
+        }
+        
+        /* Download Icon Specifics (Glow effect) */
+        .btn-download-icon { 
+            color: #fff; 
+            text-shadow: 0 0 10px rgba(255,255,255,0.6), 0 0 20px rgba(255,255,255,0.4);
+        }
+        .btn-download-icon:hover { 
+            text-shadow: 0 0 15px rgba(255,255,255,0.9), 0 0 25px rgba(255,255,255,0.7);
+            background: transparent; /* No background on hover for glow effect */
+        }
+
+
+        /* Collection Button Specifics */
+        .btn-collect.collected { 
+            color: var(--gold); 
+            text-shadow: 0 0 8px rgba(246, 192, 0, 0.4); /* subtle glow when collected */
+        }
+        .btn-collect:hover:not(.collected) { /* Only change color if not collected */
+            color: var(--gold); 
+        }
+
+
+        .tester-preview-text {
+            font-size: 32px; color: #fff; word-break: break-word;
+            line-height: 1.2;
+        }
+
+        footer{ text-align: center; padding: 40px; font-size: 12px; color: #666; margin-top: auto;}
+        @keyframes fadeIn {from{opacity:0} to{opacity:1}}
+
+        /* --- Mobile Specific Adjustments --- */
+        @media (max-width: 600px) {
+            header { flex-direction: column; justify-content: center; gap: 15px; }
+            .brand h1 { font-size: 28px; }
+            .nav-right { width: 100%; justify-content: center; }
+            
+            .controls-area { margin-top: 20px; }
+            .search-box { padding: 12px 20px; font-size: 14px; }
+
+            .tester-preview-text { font-size: 24px; }
+            .type-input { font-size: 18px; }
+
+            .tester-meta { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .tester-actions { justify-content: flex-start; margin-top: 5px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-media"><video autoplay muted loop playsinline src="assets/videos/background.mp4"></video></div>
+    <div class="bg-layer"></div>
+
+    <div class="site">
+        <header>
+            <div class="brand">
+                <img src="assets/images/mylogo.jpg" alt="Logo">
+                <h1>VAYZY <span style="font-size:12px; color:#666; display:block; font-family: Poppins; font-weight:400; letter-spacing: 0;">FONTS</span></h1>
+            </div>
+            <div class="nav-right">
+                <a href="index.html">Home</a>
+            </div>
+        </header>
+
+        <div class="controls-area">
+            <input type="text" id="searchInput" class="search-box" placeholder="Search font name..." onkeyup="filterFonts()">
+            </div>
+
+        <div id="view-tester" class="view-section active">
+            <div class="tester-input-container">
+                <input type="text" id="testerInput" class="type-input" placeholder="Type here to test fonts..." onkeyup="updateTesterText()">
+            </div>
+            <div class="tester-list" id="testerList">
+                </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>© 2025 Vayzy Creative Studio</p>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init();
+
+        // ======================================================
+        // 1. LOCAL STORAGE SETUP
+        // ======================================================
+        const COLLECTION_KEY_FONTS = 'vayzy_collection_fonts';
+
+        function getPersistentData(key, defaultValue) {
+            try { return JSON.parse(localStorage.getItem(key)) || defaultValue; }
+            catch (e) { return defaultValue; }
+        }
+
+        function savePersistentData(key, data) {
+            try { localStorage.setItem(key, JSON.stringify(data)); } catch (e) {}
+        }
+
+        // ======================================================
+        // 2. YOUR FONT DATABASE (Added IDs for Collection Logic)
+        // ======================================================
+        const fontData = [
+            {
+                id: "font_ethno", // Unique ID required for collection
+                name: "Ethnocentric", 
+                file: "assets/fonts/Ethnocentric.otf", 
+                downloadLink: "assets/fonts/Ethnocentric.otf"
+            },
+            {
+                id: "font_lemonmilk",
+                name: "Lemon Milk", 
+                file: "assets/fonts/LEMONMILK-Medium.otf", 
+                downloadLink: "assets/fonts/LEMONMILK-Medium.otf"
+            },
+            {
+                id: "font_montal",
+                name: "Montal Ban", 
+                file: "assets/fonts/MontalBan.otf", 
+                downloadLink: "assets/fonts/MontalBan.otf"
+            },
+            // Add more fonts here ensuring they have a unique 'id'
+        ];
+
+        const testerContainer = document.getElementById('testerList');
+        const testerInput = document.getElementById('testerInput');
+        const searchInput = document.getElementById('searchInput');
+
+        // ======================================================
+        // INIT & RENDER
+        // ======================================================
+        
+        function init() {
+            // Inject CSS @font-face rules
+            let styleString = "";
+            fontData.forEach((font, index) => {
+                let safeName = `Font${index}`;
+                font.cssName = safeName;
+                styleString += `@font-face { font-family: '${safeName}'; src: url('${font.file}'); }`;
+            });
+            const styleTag = document.createElement('style');
+            styleTag.textContent = styleString;
+            document.head.appendChild(styleTag);
+
+            renderFonts(fontData);
+        }
+
+        function renderFonts(fontsToRender) {
+            testerContainer.innerHTML = '';
+
+            // Get current collection state
+            const collectedFonts = getPersistentData(COLLECTION_KEY_FONTS, {});
+
+            if(fontsToRender.length === 0) {
+                testerContainer.innerHTML = '<p style="text-align:center; opacity: 0.6;">No fonts found matching that name.</p>';
+                return;
+            }
+
+            fontsToRender.forEach(font => {
+                // Check if collected
+                const isCollected = !!collectedFonts[font.id];
+                const collectedClass = isCollected ? 'collected' : '';
+
+                // Build Tester Item
+                const testerItem = document.createElement('div');
+                testerItem.className = 'tester-item';
+                testerItem.innerHTML = `
+                    <div class="tester-meta">
+                        <span style="font-family:Montserrat; font-weight:700">${font.name.toUpperCase()}</span>
+                        <div class="tester-actions">
+                            <a href="${font.downloadLink}" class="tester-btn btn-download-icon" title="Download ${font.name}" download>
+                                <i class="fa-solid fa-download"></i>
+                            </a>
+                            <button class="tester-btn btn-collect ${collectedClass}" title="Add to Collection" onclick="toggleCollect(this, '${font.id}')">
+                                <i class="fa-solid fa-star"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="tester-preview-text" style="font-family: '${font.cssName}', sans-serif;">
+                        ${testerInput.value || "Vayzy Creative Studio"}
+                    </div>
+                `;
+                testerContainer.appendChild(testerItem);
+            });
+        }
+
+        // ======================================================
+        // INTERACTION LOGIC
+        // ======================================================
+
+        function updateTesterText() {
+            const text = testerInput.value || "Vayzy Creative Studio";
+            document.querySelectorAll('.tester-preview-text').forEach(preview => {
+                preview.innerText = text;
+            });
+        }
+
+        function filterFonts() {
+            const query = searchInput.value.toLowerCase();
+            const filtered = fontData.filter(font => font.name.toLowerCase().includes(query));
+            renderFonts(filtered);
+            updateTesterText();
+        }
+
+        // Toggle Collect Logic with LocalStorage
+        function toggleCollect(btnElement, fontId) {
+            const collection = getPersistentData(COLLECTION_KEY_FONTS, {});
+            
+            if (collection[fontId]) {
+                // If already collected, remove it
+                delete collection[fontId];
+                btnElement.classList.remove('collected');
+            } else {
+                // If not collected, find data and add it
+                const fontObj = fontData.find(f => f.id === fontId);
+                if(fontObj) {
+                    collection[fontId] = fontObj;
+                    btnElement.classList.add('collected');
+                }
+            }
+            // Save back to storage
+            savePersistentData(COLLECTION_KEY_FONTS, collection);
+        }
+
+        init();
+    </script>
+</body>
+</html>

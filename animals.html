@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Vayzy Creative Studio — Animal Photos</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<style>
+@font-face {
+font-family: 'Ethnocentric';
+src: url('assets/fonts/Ethnocentric.otf') format('opentype');
+font-weight: normal;
+font-style: normal;
+}
+:root{
+--bg:#0b0f14; --gold:#f6c000; --muted:#cbd5e1; --radius:14px; --shadow:0 10px 30px rgba(2,6,23,0.6); --max-width:1200px;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:Poppins,Montserrat,sans-serif;background:var(--bg);color:var(--muted);display:flex;flex-direction:column;min-height:100vh;opacity:0;animation:fadeIn 1s forwards;}
+.bg-media{position:fixed; inset:0; z-index:-2; overflow:hidden;}
+.bg-media video{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.5;}
+.bg-layer{position:fixed; inset:0; background:linear-gradient(180deg, rgba(3,6,9,0.4), rgba(3,6,9,0.7)); z-index:-1;}
+header{display:flex; align-items:center; justify-content:space-between; padding:14px 0; position:relative; z-index:10;}
+.brand{display:flex; align-items:center; gap:14px;}
+.brand img{width:56px; height:56px; border-radius:50%; object-fit:cover; box-shadow:0 6px 20px rgba(0,0,0,0.6);}
+.brand h1{font-family:"Ethnocentric",sans-serif; font-weight:700; color:var(--gold); font-size:22px; margin:0;}
+.nav-right a{color:var(--muted); font-weight:600; text-decoration:none; margin: 0 5px;}
+.hero{padding:90px 0 40px; text-align:center;}
+.hero h2{font-size:44px; margin:0; color:var(--gold);}
+.hero p{max-width:820px; margin:16px auto 22px; color:#cbd5e1; font-size:1.05rem;}
+
+/* New masonry-style layout */
+.grid {
+display: block;
+column-count: 3;
+column-gap: 20px;
+max-width: var(--max-width);
+margin: 0 auto;
+padding: 20px 0;
+}
+
+.card {
+display: inline-block;
+width: 100%;
+margin-bottom: 20px;
+position: relative;
+border-radius: var(--radius);
+overflow: hidden;
+background: rgba(255, 255, 255, 0.03);
+box-shadow: var(--shadow);
+box-sizing: border-box;
+-webkit-column-break-inside: avoid;
+page-break-inside: avoid;
+break-inside: avoid;
+}
+.card img {
+width:100%;
+height: auto;
+display: block;
+cursor:pointer;
+transition:transform 0.3s;
+}
+.card img:hover{transform:scale(1.02);}
+
+.image-actions{
+display: flex;
+justify-content: space-around;
+align-items: center;
+padding: 10px;
+background: rgba(0, 0, 0, 0.5);
+border-top: 1px solid rgba(255, 255, 255, 0.1);
+flex-shrink: 0;
+}
+.action-button{
+background: none;
+border: none;
+color: var(--muted);
+cursor: pointer;
+font-size: 1.2rem;
+transition: color 0.2s;
+}
+.action-button.like-btn{
+display: flex;
+align-items: center;
+gap: 5px;
+}
+.action-button:hover{
+color: var(--gold);
+}
+.action-button.liked i{
+color: #ff4b5c;
+}
+.fullscreen{position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); display:flex; align-items:center; justify-content:center; z-index:9999;}
+.fullscreen img{max-width:95%; max-height:95%;}
+
+@keyframes fadeIn {from{opacity:0} to{opacity:1}}
+
+@media (max-width: 1024px) {
+.grid{column-count: 2;}
+}
+
+@media (max-width: 768px) {
+.grid{column-count:1;}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-media" aria-hidden="true">
+<video autoplay muted loop playsinline src="assets/videos/background.mp4"></video>
+</div>
+<div class="bg-layer" aria-hidden="true"></div>
+
+<header>
+<div class="brand">
+<img src="assets/images/mylogo.jpg" alt="Vayzy logo">
+<div>
+<h1>VAYZY</h1>
+<div style="font-size:12px;color:#93a4b5;">Creative assets for creators</div>
+</div>
+</div>
+<div class="nav-right">
+    <a href="index.html" class="home-link">Home </a>
+</div>
+</header>
+
+<section class="hero">
+<h2>Animal Photos</h2>
+<p>Click an image for fullscreen ❤️.</p>
+</section>
+
+<section class="collections">
+<div class="grid" id="imageGrid"></div>
+</section>
+
+<div id="fullscreenOverlay" class="fullscreen" style="display:none;">
+<img src="" alt="Fullscreen Image">
+</div>
+
+<script>
+const imageGrid = document.getElementById('imageGrid');
+const fullscreenOverlay = document.getElementById('fullscreenOverlay');
+const fullscreenImg = fullscreenOverlay.querySelector('img');
+
+const totalImages = 22;
+
+// --- LOCAL STORAGE KEYS ---
+const LIKED_KEY = 'likedImages';
+const COLLECTION_KEY_IMAGES_ANIMALS = 'vayzy_collection_images_animals'; 
+
+// Functions to open/close fullscreen
+function openFullscreen(src){
+fullscreenOverlay.style.display='flex';
+fullscreenImg.src = src;
+history.pushState({fullscreen:true}, "", "#fullscreen");
+}
+function closeFullscreen(){
+fullscreenOverlay.style.display='none';
+fullscreenImg.src='';
+if(window.location.hash === "#fullscreen") history.back();
+}
+
+// Function to get data from localStorage
+function getPersistentData(key, defaultValue) {
+try {
+return JSON.parse(localStorage.getItem(key)) || defaultValue;
+} catch (e) {
+console.error("Failed to parse localStorage data", e);
+return defaultValue;
+}
+}
+
+// Function to save data to localStorage
+function savePersistentData(key, data) {
+try {
+localStorage.setItem(key, JSON.stringify(data));
+} catch (e) {
+console.error("Failed to save to localStorage", e);
+}
+}
+
+const likedImages = getPersistentData(LIKED_KEY, {});
+const collections = getPersistentData(COLLECTION_KEY_IMAGES_ANIMALS, {});
+
+// Function to create a single image card
+function createImageCard(imgUrl, imgId) {
+const card = document.createElement('div');
+card.className = 'card';
+
+const imgEl = new Image();
+imgEl.src = imgUrl;
+imgEl.alt = imgId;
+imgEl.addEventListener('click', () => openFullscreen(imgEl.src));
+
+const actionsContainer = document.createElement('div');
+actionsContainer.className = 'image-actions';
+
+// Like Button
+const likeBtn = document.createElement('button');
+likeBtn.className = 'action-button like-btn';
+likeBtn.innerHTML = `<i class="far fa-heart"></i>`; 
+
+let isLiked = likedImages[imgId] && likedImages[imgId].liked;
+if(isLiked) {
+likeBtn.querySelector('i').classList.remove('far');
+likeBtn.querySelector('i').classList.add('fas');
+likeBtn.classList.add('liked');
+}
+
+likeBtn.addEventListener('click', (e) => {
+e.stopPropagation();
+const isCurrentlyLiked = likeBtn.classList.contains('liked');
+
+if (isCurrentlyLiked) {
+likeBtn.classList.remove('liked');
+likeBtn.querySelector('i').classList.remove('fas');
+likeBtn.querySelector('i').classList.add('far');
+} else {
+likeBtn.classList.add('liked');
+likeBtn.querySelector('i').classList.remove('far');
+likeBtn.querySelector('i').classList.add('fas');
+}
+
+likedImages[imgId] = {
+...likedImages[imgId],
+liked: !isCurrentlyLiked
+};
+savePersistentData(LIKED_KEY, likedImages);
+});
+
+// Download Button
+const downloadBtn = document.createElement('a');
+downloadBtn.className = 'action-button';
+downloadBtn.href = imgUrl;
+downloadBtn.download = `Vayzy-${imgId}`;
+downloadBtn.innerHTML = `<i class="fas fa-download"></i>`;
+
+// Add to Collection Button
+const collectionBtn = document.createElement('button');
+collectionBtn.className = 'action-button';
+collectionBtn.innerHTML = `<i class="far fa-star"></i>`;
+if (collections[imgId]) {
+collectionBtn.innerHTML = `<i class="fas fa-star" style="color: var(--gold);"></i>`;
+}
+
+collectionBtn.addEventListener('click', (e) => {
+e.stopPropagation();
+if (collections[imgId]) {
+delete collections[imgId];
+collectionBtn.innerHTML = `<i class="far fa-star"></i>`;
+alert('Image removed from your collection.');
+} else {
+collections[imgId] = {
+url: imgUrl,
+source: window.location.pathname
+};
+collectionBtn.innerHTML = `<i class="fas fa-star" style="color: var(--gold);"></i>`;
+alert('Image added to your collection!');
+}
+savePersistentData(COLLECTION_KEY_IMAGES_ANIMALS, collections);
+});
+
+// Share Button
+const shareBtn = document.createElement('button');
+shareBtn.className = 'action-button';
+shareBtn.innerHTML = `<i class="fas fa-share-alt"></i>`;
+
+shareBtn.addEventListener('click', async (e) => {
+e.stopPropagation();
+if (navigator.share) {
+try {
+await navigator.share({
+title: 'Check out this Animal Photo from Vayzy',
+text: 'Find this and more creative assets on Vayzy Creative Studio.',
+url: window.location.origin + `/animal.html#${imgId}`,
+});
+} catch (error) {
+console.error('Error sharing:', error);
+}
+} else {
+alert('Sharing is not supported on this browser.');
+}
+});
+
+actionsContainer.appendChild(likeBtn);
+actionsContainer.appendChild(downloadBtn);
+actionsContainer.appendChild(collectionBtn);
+actionsContainer.appendChild(shareBtn);
+
+card.appendChild(imgEl);
+card.appendChild(actionsContainer);
+imageGrid.appendChild(card);
+}
+
+// --- SUPABASE STORAGE CONFIG ---
+// Update YOUR_PROJECT_ID and YOUR_BUCKET_NAME
+const supabaseBaseUrl = "https://swfpcgectlananmmbgzv.supabase.co/storage/v1/object/public/animal/";
+
+for (let i = 1; i <= totalImages; i++) {
+const imgName = `animal${i}.jpg`;
+const imgId = imgName.split('.')[0];
+
+// Use the Supabase Public URL
+const imgUrl = `${supabaseBaseUrl}${imgName}`;
+
+createImageCard(imgUrl, imgId);
+}
+
+// Close fullscreen on overlay click
+fullscreenOverlay.addEventListener('click', closeFullscreen);
+
+// Close fullscreen on browser back button
+window.addEventListener('popstate', (event) => {
+if(fullscreenOverlay.style.display === 'flex' && event.state?.fullscreen) closeFullscreen();
+});
+</script>
+</body>
+</html>

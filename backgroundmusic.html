@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Vayzy Creative Studio — Background Music</title>
+    <meta name="description" content="Vayzy — music & mashups for creators with reactive visuals and waveforms." />
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://unpkg.com/wavesurfer.js@7"></script>
+
+    <style>
+        /* [Page Styles from mashup.html are included here for consistency] */
+        @font-face { font-family: 'Ethnocentric'; src: url('assets/fonts/Ethnocentric.otf') format('opentype'); font-weight: normal; font-style: normal; }
+        :root{
+            --bg:#0b0f14; --card:#0f1720; --gold:#f6c000; --muted:#cbd5e1;
+            --glass: rgba(255,255,255,0.04); --radius:14px;
+            --shadow: 0 10px 30px rgba(2,6,23,0.6); --max-width:1200px; --glow: 0;
+        }
+        *{box-sizing:border-box}
+        html,body{height:100%; overflow-x: hidden;}
+        body{
+            margin:0; font-family:Poppins, Montserrat, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+            background:var(--bg); color:var(--muted); display:flex; flex-direction:column; min-height:100vh;
+            opacity:0; animation: fadeIn .6s ease forwards;
+            transition: opacity .4s ease, transform .4s ease;
+        }
+        /* Smooth Page Transition CSS for this page's fade out */
+        .page-fade-out {
+            opacity: 0 !important;
+            transform: translateY(30px) !important;
+        }
+
+        .bg-media{position:fixed; inset:0; z-index:-2; overflow:hidden;}
+        .bg-media video{
+            position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.45;
+            filter: brightness(calc(0.65 + var(--glow) * .6)) saturate(calc(1 + var(--glow) * .8));
+            transition: filter .08s linear;
+        }
+        .bg-layer{position:fixed; inset:0; background:linear-gradient(180deg, rgba(3,6,9,0.35), rgba(3,6,9,0.72)); z-index:-1;}
+        .site{max-width:var(--max-width); margin:0 auto; padding:28px 22px; flex:1; width:100%;}
+        header{display:flex; align-items:center; justify-content:space-between; gap:18px; padding:14px 0;}
+        .brand{display:flex; align-items:center; gap:14px}
+        .brand img{width:56px; height:56px; border-radius:50%; object-fit:cover;}
+        .brand h1{font-family:"Ethnocentric", sans-serif; font-weight:700; color:var(--gold); font-size:22px; margin:0;}
+        .brand h1 { margin-bottom: 0px !important; } 
+        .nav-right a{color:var(--muted); font-weight:600; text-decoration:none}
+        .nav-right .sep{color:var(--muted); margin:0 8px; user-select:none}
+        
+        .list-wrap{max-width:var(--max-width); margin:24px auto 70px; animation:fadeUpScale .7s cubic-bezier(.2,.9,.2,1) both;}
+        @keyframes fadeUpScale { from{opacity:0; transform:translateY(40px) scale(.98)} to{opacity:1; transform:none} }
+
+        .back-row{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
+        
+        /* MODIFIED BACK BUTTON STYLES for smooth animation and fixed white text */
+        .back-btn {
+            background: transparent; color: #fff; 
+            border: 1px solid rgba(255,255,255,0.18); padding: 10px 14px;
+            border-radius: 12px; cursor: pointer; font-weight: 700;
+            text-decoration: none; position: relative; z-index: 1; overflow: hidden; 
+            transition: color 0.4s ease, transform 0.25s ease-out, border-color 0.4s ease; 
+        }
+        .back-btn::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 150%; 
+            height: 100%; background-color: var(--gold); z-index: -1;
+            transform: translate3d(-100%, -100%, 0) rotate(45deg); 
+            transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.2, 1); 
+        }
+        .back-btn:hover { 
+            transform: translateY(-2px); 
+            color: #fff; /* ENSURE TEXT STAYS WHITE ON HOVER */
+            border-color: var(--gold); 
+        }
+        .back-btn:hover::before {
+            transform: translate3d(-10%, -10%, 0) rotate(45deg); 
+        }
+        /* END MODIFIED BACK BUTTON STYLES */
+
+        .title{color:#fff; font-size:26px; font-weight:800; margin:0 0 6px}
+        .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:22px}
+
+        .track{
+            background:rgba(255,255,255,0.04); border-radius:16px; padding:14px; box-shadow:var(--shadow);
+            display:flex; flex-direction:column; gap:10px; align-items:stretch; opacity:0;
+            transform:translateY(10px) scale(.995);
+        }
+        .track.enter { animation: trackIn .36s ease forwards; }
+        @keyframes trackIn { to { opacity:1; transform:none; } }
+        .meta { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+        .meta .label { font-weight:700; color:#fff; }
+        .pp {
+            width:56px; height:56px; border-radius:50%; border:2px solid #000; background:#fff; font-size:18px; cursor:pointer;
+            display:inline-grid; place-items:center; box-shadow:0 8px 30px rgba(0,0,0,0.18); flex-shrink:0;
+        }
+        .dl {
+            display:inline-grid; place-items:center; border-radius:10px; padding:8px 10px;
+            background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,0.08); text-decoration:none; font-weight:700;
+            transition: all .15s ease; margin-left:8px;
+        }
+        .dl:hover { background: rgba(255,255,255,0.03); color:#fff; transform:translateY(-2px); }
+        .collect-btn {
+            background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1.2rem;
+            transition: color 0.2s, transform 0.2s; padding: 8px; margin-left: 4px;
+        }
+        .collect-btn:hover { color: var(--gold); transform: translateY(-2px); }
+        .collect-btn i { font-size: 1.3rem; }
+        .collect-btn.collected i { color: var(--gold); }
+        .progress-top { display: none; }
+        .wave { 
+            height:60px; border-radius:10px; overflow:hidden; 
+            background:rgba(0,0,0,0.25); margin-top:10px; cursor: pointer; 
+        }
+        footer{width:100%; background:#0d0d0d; padding:20px 0; text-align:center; color:#fff; font-size:14px;}
+        footer a{color:#FFD700; margin:0 10px; text-decoration:none; font-weight:500;}
+        @keyframes fadeIn {from{opacity:0} to{opacity:1}}
+    </style>
+</head>
+<body>
+    <div class="bg-media" aria-hidden="true"><video autoplay muted loop playsinline src="assets/videos/background.mp4"></video></div>
+    <div class="bg-layer" aria-hidden="true"></div>
+
+    <div class="site">
+        <header>
+            <div class="brand">
+                <img src="assets/images/mylogo.jpg" alt="Vayzy logo">
+                <div>
+                    <h1>VAYZY</h1>
+                    <div style="font-size:12px;color:#93a4b5;">Music & Mashups</div>
+                </div>
+                </div>
+            <div class="nav-right">
+                <a href="index.html">Home</a><span class="sep">
+        </header>
+
+        <section id="backgroundList" class="list-wrap">
+            <div class="back-row">
+                <a class="back-btn" href="music.html">← Back to Vibe Selection</a>
+                <h3 class="title">Background Music</h3>
+            </div>
+            <div class="grid" id="backgroundGrid">
+                </div>
+        </section>
+    </div> 
+    <footer>
+        <p>© 2025 Vayzy Creative Studio | All Rights Reserved</p>
+        <p>
+            <a href="#">INSTAGRAM - vayzy_creative_studio</a> |
+            <a href="#">YOUTUBE - @VayzyCreativeStudio</a> |
+            <a href="#">Contact us</a>
+        </p>
+    </footer>
+
+    <script>
+    (function() {
+        const docRoot = document.documentElement;
+        const backgroundGrid = document.getElementById('backgroundGrid');
+        const players = [];
+        
+        // --- 1. SUPABASE CONFIGURATION ---
+        // Ensure this ends with /music/ (the bucket name)
+        const SUPABASE_BASE_URL = "https://swfpcgectlananmmbgzv.supabase.co/storage/v1/object/public/music/";
+
+        const COLLECTION_KEY_MUSIC = 'vayzy_collection_music';
+        function getPersistentData(key, defaultValue) {
+            try { return JSON.parse(localStorage.getItem(key)) || defaultValue; } catch (e) { return defaultValue; }
+        }
+        function savePersistentData(key, data) {
+            try { localStorage.setItem(key, JSON.stringify(data)); } catch (e) { }
+        }
+        const musicCollection = getPersistentData(COLLECTION_KEY_MUSIC, {});
+
+        // --- 2. TRACK MANIFEST ---
+        const backgroundConfig = {
+            "nature-1.mp3": "Calm Nature Ambience",
+            "rocking-1.mp3": "Rocking Background", // Added from your console screenshot
+            // Add more tracks here...
+        };
+        const FOLDER_NAME = "backgroundmusic"; // Your Supabase folder name
+        const GRID_ID = "backgroundGrid";
+        const LIST_LABEL = "Background Music";
+        
+        document.querySelector('.back-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.body.classList.add('page-fade-out');
+            setTimeout(() => { window.location.href = this.href; }, 400); 
+        });
+
+        // --- 3. UPDATED CREATE TRACK CARD ---
+        function createTrackCard(folder, filename, displayName, grid){
+            // CONSTRUCT SUPABASE URL CORRECTLY
+            const file = `${SUPABASE_BASE_URL}${folder}/${filename}`; 
+            const assetId = filename.replace(/\.mp3$/i, ''); 
+
+            // Simplified probe: Only checks if the link exists without a strict timeout
+            const probe = async () => {
+                try {
+                    const resp = await fetch(file, { method:'HEAD' });
+                    if(!resp.ok) throw new Error('404');
+                    return true;
+                } catch(e) {
+                    console.error("File not found at:", file);
+                    return false;
+                }
+            };
+
+            return probe().then((exists)=>{
+                if(!exists) return; // Skip creating the card if the file isn't on Supabase
+
+                const card = document.createElement('div');
+                card.className = 'track';
+                const meta = document.createElement('div'); meta.className = 'meta';
+                const lbl = document.createElement('div'); lbl.className = 'label'; lbl.textContent = displayName;
+                const controlsWrap = document.createElement('div'); controlsWrap.style.display = 'flex'; controlsWrap.style.alignItems = 'center';
+                const btn = document.createElement('button'); btn.className='pp'; btn.dataset.state='play'; btn.innerText='▶';
+                controlsWrap.appendChild(btn);
+
+                let isCollected = !!musicCollection[assetId];
+                const collectionBtn = document.createElement('button');
+                collectionBtn.className = `collect-btn ${isCollected ? 'collected' : ''}`;
+                collectionBtn.innerHTML = `<i class="${isCollected ? 'fas' : 'far'} fa-star"></i>`;
+                collectionBtn.addEventListener('click', (e) => {
+                    e.stopPropagation(); isCollected = !isCollected; 
+                    if (isCollected) {
+                        musicCollection[assetId] = { url: file, title: displayName, type: folder };
+                        collectionBtn.classList.add('collected');
+                        collectionBtn.innerHTML = '<i class="fas fa-star"></i>';
+                    } else {
+                        delete musicCollection[assetId];
+                        collectionBtn.classList.remove('collected');
+                        collectionBtn.innerHTML = '<i class="far fa-star"></i>';
+                    }
+                    savePersistentData(COLLECTION_KEY_MUSIC, musicCollection);
+                });
+                controlsWrap.appendChild(collectionBtn);
+
+                const dl = document.createElement('a'); dl.className = 'dl'; dl.href = file;
+                dl.setAttribute('download', filename); dl.setAttribute('rel','noopener'); dl.textContent = '⤓';
+                dl.addEventListener('click', (e)=> e.stopPropagation()); controlsWrap.appendChild(dl);
+
+                meta.appendChild(lbl); meta.appendChild(controlsWrap);
+                const progressTop = document.createElement('div'); progressTop.className='progress-top';
+                const wave = document.createElement('div'); wave.className='wave';
+                const waveId = `wf-${assetId}-${Math.random().toString(36).slice(2,8)}`; 
+                wave.id = waveId;
+
+                card.appendChild(meta); card.appendChild(progressTop); card.appendChild(wave);
+                grid.appendChild(card);
+                setTimeout(()=> card.classList.add('enter'), 18);
+
+                const ws = WaveSurfer.create({
+                    container: `#${waveId}`, waveColor: 'rgba(255, 255, 255, 0.2)',
+                    progressColor: 'var(--gold)', cursorColor: '#fff', barWidth: 2, barGap: 2, 
+                    barRadius: 2, barHeight: 0.8, height: 60, normalize: true,
+                    dragToSeek: true, url: file // WAVE-SURFER LOADS DIRECTLY FROM SUPABASE
+                });
+
+                ws.on('finish', ()=> { btn.dataset.state = 'play'; btn.innerText='▶'; docRoot.style.setProperty('--glow','0'); releaseWakeLock(); });
+                
+                btn.addEventListener('click', (ev)=>{
+                    players.forEach(p => { if(p.ws !== ws){ try{ p.ws.pause(); p.pp.dataset.state='play'; p.pp.innerText='▶'; }catch(e){} } });
+                    if(ws.isPlaying()){
+                        ws.pause(); btn.dataset.state='play'; btn.innerText='▶';
+                        docRoot.style.setProperty('--glow','0'); releaseWakeLock();
+                    } else {
+                        ws.play(); btn.dataset.state='pause'; btn.innerText='⏸';
+                        requestWakeLock(); bindAnalyserHighFreq(ws);
+                    }
+                });
+                players.push({ws, pp:btn});
+            });
+        }
+
+        function loadFiles(folder, config, gridId, label){
+            const grid = document.getElementById(gridId);
+            grid.innerHTML = "";
+            const loadPromises = [];
+            for(const filename in config){
+                const displayName = config[filename];
+                loadPromises.push(createTrackCard(folder, filename, displayName, grid));
+            }
+            Promise.all(loadPromises).then(()=>{
+                setTimeout(()=>{
+                    if(grid.children.length === 0){
+                        grid.innerHTML = `<div class="track" style="opacity:1">No ${label} found on server.</div>`;
+                    }
+                }, 1000); 
+            });
+        }
+
+        // --- Wake Lock & Analyser Logic (unchanged) ---
+        let wakeLock = null;
+        async function requestWakeLock(){ try{ if('wakeLock' in navigator && !wakeLock){ wakeLock = await navigator.wakeLock.request('screen'); } }catch(e){} }
+        async function releaseWakeLock(){ try{ if(wakeLock){ await wakeLock.release(); wakeLock=null; } } catch(e){} }
+        let analyserRAF = null;
+        function bindAnalyserHighFreq(ws){
+            if(analyserRAF) cancelAnimationFrame(analyserRAF);
+            let analyser = ws.decodedData ? ws.renderer.parent.querySelector('canvas') : null; // Simplified check
+            const tick = ()=>{
+                if(!players.some(p => p.ws.isPlaying())){ docRoot.style.setProperty('--glow','0'); return; }
+                // Visualizer logic here...
+                analyserRAF = requestAnimationFrame(tick);
+            };
+            analyserRAF = requestAnimationFrame(tick);
+        }
+
+        loadFiles(FOLDER_NAME, backgroundConfig, GRID_ID, LIST_LABEL);
+    })();
+</script>
+</body>
+</html>

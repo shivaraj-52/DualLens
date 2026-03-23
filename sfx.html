@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Vayzy Creative Studio — Sound Effects</title>
+    <meta name="description" content="Vayzy — High-quality sound effects library for creators." />
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <script src="https://unpkg.com/wavesurfer.js@7"></script>
+
+    <style>
+        @font-face { 
+            font-family: 'Ethnocentric'; 
+            src: url('assets/fonts/Ethnocentric.otf') format('opentype'); 
+            font-weight: normal; font-style: normal; 
+        }
+
+        :root {
+            --bg: #0b0f14;
+            --card: #0f1720;
+            --gold: #f6c000;
+            --muted: #cbd5e1;
+            --glass: rgba(255, 255, 255, 0.04);
+            --radius: 14px;
+            --shadow: 0 10px 30px rgba(2, 6, 23, 0.6);
+            --max-width: 1200px;
+            --glow: 0;
+        }
+
+        * { box-sizing: border-box; }
+        html, body { height: 100%; overflow-x: hidden; scroll-behavior: smooth; }
+        
+        body {
+            margin: 0; font-family: 'Poppins', sans-serif;
+            background: var(--bg); color: var(--muted);
+            display: flex; flex-direction: column; min-height: 100vh;
+            opacity: 0; animation: fadeIn .6s ease forwards;
+        }
+
+        /* Smooth Page Transition */
+        .page-fade-out { opacity: 0 !important; transform: translateY(20px) !important; transition: all .4s ease; }
+
+        /* Background Media */
+        .bg-media { position: fixed; inset: 0; z-index: -2; overflow: hidden; }
+        .bg-media video {
+            position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .45;
+            filter: brightness(calc(0.65 + var(--glow) * .6)) saturate(calc(1 + var(--glow) * .8));
+        }
+        .bg-layer { position: fixed; inset: 0; background: linear-gradient(180deg, rgba(3,6,9,0.3), rgba(3,6,9,0.8)); z-index: -1; }
+        
+        /* Layout */
+        .site { max-width: var(--max-width); margin: 0 auto; padding: 28px 22px; flex: 1; width: 100%; }
+        header { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; }
+        .brand { display: flex; align-items: center; gap: 14px; }
+        .brand img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold); }
+        .brand h1 { font-family: "Ethnocentric", sans-serif; color: var(--gold); font-size: 22px; margin: 0; }
+        
+        /* Controls */
+        .controls-row { display: flex; gap: 15px; margin: 20px 0; flex-wrap: wrap; }
+        .search-box { flex: 1; min-width: 250px; position: relative; }
+        .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--gold); }
+        .search-box input {
+            width: 100%; background: var(--glass); border: 1px solid rgba(255,255,255,0.1);
+            padding: 12px 12px 12px 45px; border-radius: 12px; color: #fff; outline: none;
+            transition: border-color .3s;
+        }
+        .search-box input:focus { border-color: var(--gold); }
+
+        .back-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .back-btn {
+            background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.18);
+            padding: 10px 18px; border-radius: 12px; cursor: pointer; font-weight: 700;
+            text-decoration: none; transition: all 0.3s ease;
+        }
+        .back-btn:hover { background: var(--gold); color: #000; border-color: var(--gold); transform: translateX(-5px); }
+
+        /* Grid & Cards */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .track {
+            background: var(--glass); border-radius: 16px; padding: 20px; 
+            border: 1px solid rgba(255,255,255,0.05);
+            display: flex; flex-direction: column; gap: 12px; transition: transform .3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .track:hover { transform: translateY(-5px); border-color: rgba(246, 192, 0, 0.3); }
+        
+        .meta { display: flex; align-items: center; justify-content: space-between; }
+        .meta .label { font-weight: 700; color: #fff; font-size: 1.1rem; }
+        
+        .btns-group { display: flex; align-items: center; gap: 10px; }
+        .pp {
+            width: 44px; height: 44px; border-radius: 50%; border: none; 
+            background: var(--gold); color: #000; font-size: 16px; cursor: pointer; 
+            display: grid; place-items: center; transition: transform .2s;
+        }
+        .pp:hover { transform: scale(1.1); }
+        
+        .dl, .collect-btn {
+            background: rgba(255,255,255,0.05); color: var(--muted); border: 1px solid rgba(255,255,255,0.1);
+            width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center;
+            cursor: pointer; text-decoration: none; transition: all .2s;
+        }
+        .dl:hover, .collect-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+        .collect-btn.collected i { color: var(--gold); }
+
+        .wave { height: 60px; border-radius: 8px; overflow: hidden; background: rgba(0,0,0,0.3); cursor: pointer; }
+
+        footer { width: 100%; background: #070a0d; padding: 40px 22px; text-align: center; margin-top: auto; }
+        footer a { color: var(--gold); text-decoration: none; margin: 0 10px; font-weight: 600; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+    <div class="bg-media" aria-hidden="true"><video autoplay muted loop playsinline src="assets/videos/background.mp4"></video></div>
+    <div class="bg-layer" aria-hidden="true"></div>
+
+    <div class="site">
+        <header>
+            <div class="brand">
+                <img src="assets/images/mylogo.jpg" alt="Vayzy Logo">
+                <div>
+                    <h1>VAYZY</h1>
+                    <div style="font-size:12px; color:#93a4b5; letter-spacing:1px;">STUDIO ASSETS</div>
+                </div>
+            </div>
+            <div class="nav-right">
+                <a href="index.html" style="color:var(--gold); text-decoration:none; font-weight:700;">Home</a>
+            </div>
+        </header>
+
+        <section class="list-wrap">
+            <div class="back-row">
+                <a class="back-btn" href="music.html">← Back to Selection</a>
+                <h2 style="color:#fff; margin:0; font-family:'Ethnocentric'; font-size: 1.2rem;">Sound Effects</h2>
+            </div>
+
+            <div class="controls-row">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="sfxSearch" placeholder="Search assets (e.g. whoosh, hit, transition)...">
+                </div>
+            </div>
+
+            <div class="grid" id="sfxGrid">
+                </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>© 2026 Vayzy Creative Studio | All Rights Reserved</p>
+        <p>
+            <a href="#">Instagram</a> | 
+            <a href="#">YouTube</a> | 
+            <a href="#">Contact</a>
+        </p>
+    </footer>
+
+    <script>
+        (function() {
+            const sfxGrid = document.getElementById('sfxGrid');
+            const searchInput = document.getElementById('sfxSearch');
+            const players = [];
+            const COLLECTION_KEY = 'vayzy_collection_music';
+            let musicCollection = JSON.parse(localStorage.getItem(COLLECTION_KEY)) || {};
+
+            // --- CONFIGURATION ---
+            // Your Supabase Storage Path
+            const SUPABASE_BASE_URL = "https://ujoqamgrtbrkvtxotbxp.supabase.co/storage/v1/object/public/music/sfx/";
+
+            // List your files here
+            const sfxConfig = [
+                { id: "whoosh_01", file: "whoosh-1.mp3", title: "Cinematic Whoosh" },
+                // Simply add more items as you upload them to Supabase:
+                // { id: "hit_01", file: "impact.mp3", title: "Heavy Impact" }
+            ];
+
+            function createTrackCard(item) {
+                const filePath = `${SUPABASE_BASE_URL}${item.file}`;
+                const card = document.createElement('div');
+                card.className = 'track';
+                card.dataset.title = item.title.toLowerCase();
+
+                let isCollected = !!musicCollection[item.id];
+
+                card.innerHTML = `
+                    <div class="meta">
+                        <div class="label">${item.title}</div>
+                        <div class="btns-group">
+                            <button class="pp" title="Play/Pause">▶</button>
+                            <button class="collect-btn ${isCollected ? 'collected' : ''}" title="Save to Collection">
+                                <i class="${isCollected ? 'fas' : 'far'} fa-star"></i>
+                            </button>
+                            <a href="${filePath}" download="${item.file}" target="_blank" class="dl" title="Download">⤓</a>
+                        </div>
+                    </div>
+                    <div class="wave" id="wave-${item.id}"></div>
+                `;
+
+                sfxGrid.appendChild(card);
+
+                // Initialize WaveSurfer for this card
+                const ws = WaveSurfer.create({
+                    container: `#wave-${item.id}`,
+                    waveColor: 'rgba(255, 255, 255, 0.1)',
+                    progressColor: '#f6c000',
+                    height: 60,
+                    barWidth: 2,
+                    barGap: 3,
+                    barRadius: 4,
+                    url: filePath
+                });
+
+                const playBtn = card.querySelector('.pp');
+                
+                playBtn.onclick = () => {
+                    // Pause all other players
+                    players.forEach(p => { 
+                        if(p.ws !== ws && p.ws.isPlaying()) p.ws.pause(); 
+                    });
+                    ws.playPause();
+                };
+
+                ws.on('play', () => { 
+                    playBtn.innerText = '⏸'; 
+                    document.documentElement.style.setProperty('--glow', '1'); 
+                });
+                
+                ws.on('pause', () => { 
+                    playBtn.innerText = '▶'; 
+                    // Only stop glow if no other tracks are playing
+                    if (!players.some(p => p.ws.isPlaying())) {
+                        document.documentElement.style.setProperty('--glow', '0');
+                    }
+                });
+
+                ws.on('finish', () => {
+                    playBtn.innerText = '▶';
+                    document.documentElement.style.setProperty('--glow', '0');
+                });
+
+                // Collection Logic
+                const cBtn = card.querySelector('.collect-btn');
+                cBtn.onclick = () => {
+                    isCollected = !isCollected;
+                    if(isCollected) {
+                        musicCollection[item.id] = { url: filePath, title: item.title, type: 'sfx' };
+                        cBtn.classList.add('collected');
+                        cBtn.innerHTML = '<i class="fas fa-star"></i>';
+                    } else {
+                        delete musicCollection[item.id];
+                        cBtn.classList.remove('collected');
+                        cBtn.innerHTML = '<i class="far fa-star"></i>';
+                    }
+                    localStorage.setItem(COLLECTION_KEY, JSON.stringify(musicCollection));
+                };
+
+                players.push({ws, btn: playBtn});
+            }
+
+            // Initialize the list
+            sfxConfig.forEach(createTrackCard);
+
+            // Search Functionality
+            if(searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    const val = e.target.value.toLowerCase();
+                    document.querySelectorAll('.track').forEach(card => {
+                        const title = card.dataset.title;
+                        card.style.display = title.includes(val) ? 'flex' : 'none';
+                    });
+                });
+            }
+
+            // Page Exit Animation
+            document.querySelectorAll('.back-btn, .nav-right a').forEach(link => {
+                link.onclick = function(e) {
+                    e.preventDefault();
+                    document.body.classList.add('page-fade-out');
+                    setTimeout(() => { window.location.href = this.href; }, 400);
+                };
+            });
+
+        })();
+    </script>
+</body>
+</html>

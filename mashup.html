@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Vayzy Creative Studio — Mashups</title>
+    <meta name="description" content="Vayzy — music & mashups for creators with reactive visuals and waveforms." />
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <script src="https://unpkg.com/wavesurfer.js@7"></script>
+
+    <style>
+        @font-face {
+            font-family: 'Ethnocentric';
+            src: url('assets/fonts/Ethnocentric.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        :root{
+            --bg:#0b0f14;
+            --card:#0f1720;
+            --gold:#f6c000;
+            --muted:#cbd5e1;
+            --glass: rgba(255,255,255,0.04);
+            --radius:14px;
+            --shadow: 0 10px 30px rgba(2,6,23,0.6);
+            --max-width:1200px;
+            --glow: 0;
+        }
+        *{box-sizing:border-box}
+        html,body{height:100%; overflow-x: hidden;}
+        body{
+            margin:0;
+            font-family:Poppins, Montserrat, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+            background:var(--bg);
+            color:var(--muted);
+            display:flex;
+            flex-direction:column;
+            min-height:100vh;
+        }
+
+        /* reactive background video - uses --glow */
+        .bg-media{position:fixed; inset:0; z-index:-2; overflow:hidden;}
+        .bg-media video{
+            position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.45;
+            filter: brightness(calc(0.65 + var(--glow) * .6)) saturate(calc(1 + var(--glow) * .8));
+            transition: filter .08s linear;
+        }
+        .bg-layer{position:fixed; inset:0; background:linear-gradient(180deg, rgba(3,6,9,0.35), rgba(3,6,9,0.72)); z-index:-1;}
+        .site{max-width:var(--max-width); margin:0 auto; padding:28px 22px; flex:1; width:100%;}
+
+        header{display:flex; align-items:center; justify-content:space-between; gap:18px; padding:14px 0;}
+        .brand{display:flex; align-items:center; gap:14px}
+        .brand img{width:56px; height:56px; border-radius:50%; object-fit:cover;}
+        .brand h1{font-family:"Ethnocentric", sans-serif; font-weight:700; color:var(--gold); font-size:22px; margin:0;}
+        .brand h1 { margin-bottom: 0px !important; } 
+        .nav-right a{color:var(--muted); font-weight:600; text-decoration:none}
+        .nav-right .sep{color:var(--muted); margin:0 8px; user-select:none}
+
+        /* List styles */
+        .list-wrap{max-width:var(--max-width); margin:24px auto 70px; animation:fadeUpScale .7s cubic-bezier(.2,.9,.2,1) both;}
+        @keyframes fadeUpScale { from{opacity:0; transform:translateY(40px) scale(.98)} to{opacity:1; transform:none} }
+
+        .back-row{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
+        
+        .back-btn {
+            background: transparent;
+            color: #fff; 
+            border: 1px solid rgba(255,255,255,0.18);
+            padding: 10px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            text-decoration: none; 
+            position: relative; 
+            z-index: 1;
+            overflow: hidden; 
+            transition: color 0.4s ease, transform 0.25s ease-out, border-color 0.4s ease;
+        }
+
+        .back-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 150%; 
+            height: 100%;
+            background-color: var(--gold); 
+            z-index: -1;
+            transform: translate3d(-100%, -100%, 0) rotate(45deg); 
+            transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.2, 1); 
+        }
+
+        .back-btn:hover { 
+            transform: translateY(-2px); 
+            color: #fff; 
+            border-color: var(--gold); 
+        }
+
+        .back-btn:hover::before {
+            transform: translate3d(-10%, -10%, 0) rotate(45deg); 
+        }
+
+        .title{color:#fff; font-size:26px; font-weight:800; margin:0 0 6px}
+        .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:22px}
+
+        .track{
+            background:rgba(255,255,255,0.04);
+            border-radius:16px;
+            padding:14px;
+            box-shadow:var(--shadow);
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+            align-items:stretch;
+            opacity:0;
+            transform:translateY(10px) scale(.995);
+        }
+        .track.enter { animation: trackIn .36s ease forwards; }
+        @keyframes trackIn { to { opacity:1; transform:none; } }
+
+        .meta { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+        .meta .label { font-weight:700; color:#fff; }
+        .pp {
+            width:56px; height:56px; border-radius:50%; border:2px solid #000; background:#fff; font-size:18px; cursor:pointer;
+            display:inline-grid; place-items:center; box-shadow:0 8px 30px rgba(0,0,0,0.18);
+            flex-shrink:0;
+        }
+        .dl {
+            display:inline-grid; place-items:center; border-radius:10px; padding:8px 10px;
+            background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,0.08); text-decoration:none; font-weight:700;
+            transition: all .15s ease;
+            margin-left:8px;
+        }
+        .dl:hover { background: rgba(255,255,255,0.03); color:#fff; transform:translateY(-2px); }
+
+        .collect-btn {
+            background: none;
+            border: none;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: color 0.2s, transform 0.2s;
+            padding: 8px;
+            margin-left: 4px;
+        }
+        .collect-btn:hover {
+            color: var(--gold);
+            transform: translateY(-2px);
+        }
+        .collect-btn i {
+            font-size: 1.3rem;
+        }
+        .collect-btn.collected i {
+            color: var(--gold);
+        }
+
+        .progress-top { display: none; }
+
+        .wave { 
+            height:80px; /* Increased height for professional look */
+            border-radius:12px; 
+            overflow:hidden; 
+            background:rgba(0,0,0,0.25); 
+            margin-top:10px; 
+            cursor: pointer; 
+        }
+
+        footer{width:100%; background:#0d0d0d; padding:20px 0; text-align:center; color:#fff; font-size:14px;}
+        footer a{color:#FFD700; margin:0 10px; text-decoration:none; font-weight:500;}
+
+        @keyframes fadeIn {from{opacity:0} to{opacity:1}}
+    </style>
+</head>
+<body>
+    <div class="bg-media" aria-hidden="true"><video autoplay muted loop playsinline src="assets/videos/background.mp4"></video></div>
+    <div class="bg-layer" aria-hidden="true"></div>
+
+    <div class="site">
+        <header>
+            <div class="brand">
+                <img src="assets/images/mylogo.jpg" alt="Vayzy logo">
+                <div>
+                    <h1>VAYZY</h1>
+                    <div style="font-size:12px;color:#93a4b5;">Music & Mashups</div>
+                </div>
+                </div>
+            <div class="nav-right">
+                <a href="index.html">Home</a>
+            </div>
+        </header>
+
+        <section id="mashupsList" class="list-wrap">
+            <div class="back-row">
+                <a class="back-btn" href="music.html">← Back to Vibe Selection</a>
+                <h3 class="title">Mashups</h3>
+            </div>
+            <div class="grid" id="mashupGrid">
+                </div>
+        </section>
+    </div> 
+    <footer>
+        <p>© 2025 Vayzy Creative Studio | All Rights Reserved</p>
+        <p>
+            <a href="#">INSTAGRAM - vayzy_creative_studio</a> |
+            <a href="#">YOUTUBE - @VayzyCreativeStudio</a> |
+            <a href="#">Contact us</a>
+        </p>
+    </footer>
+
+    <script>
+    // 1. FIXED: Set the URL to the BUCKET level only
+    const SUPABASE_BASE_URL = "https://swfpcgectlananmmbgzv.supabase.co/storage/v1/object/public/music/";
+
+    const docRoot = document.documentElement;
+    const mashupGrid = document.getElementById('mashupGrid');
+    const COLLECTION_KEY_MUSIC = 'vayzy_collection_music';
+
+    const musicCollection = JSON.parse(localStorage.getItem(COLLECTION_KEY_MUSIC)) || {};
+
+    const mashupConfig = {
+        "rocking-1.mp3": "Rocking (Energetic Mashup)",
+        "mash-2.mp3": "Chill Vibes (Smooth Mashup)",
+    };
+
+    const players = [];
+
+    async function createTrackCard(folder, filename, displayName, grid) {
+        // 2. FIXED: This now builds a clean path: bucket/folder/filename
+        const file = `${SUPABASE_BASE_URL}${folder}/${filename}`; 
+        const assetId = filename.replace(/\.mp3$/i, ''); 
+
+        // Create the card immediately to avoid "disappearing" tracks
+        const card = document.createElement('div');
+        card.className = 'track';
+        const waveId = `wf-${assetId}-${Math.random().toString(36).slice(2,8)}`;
+
+        card.innerHTML = `
+            <div class="meta">
+                <div class="label">${displayName}</div>
+                <div style="display:flex;align-items:center;">
+                    <button class="pp" id="btn-${waveId}">▶</button>
+                    <button class="collect-btn" id="fav-${waveId}">
+                        <i class="${musicCollection[assetId] ? 'fas' : 'far'} fa-star"></i>
+                    </button>
+                    <a href="${file}" class="dl" download="Vayzy-${filename}">⤓</a>
+                </div>
+            </div>
+            <div class="wave" id="${waveId}"></div>
+        `;
+
+        grid.appendChild(card);
+        setTimeout(() => card.classList.add('enter'), 50);
+
+        const btn = document.getElementById(`btn-${waveId}`);
+        const favBtn = document.getElementById(`fav-${waveId}`);
+
+        // 3. Initialize WaveSurfer
+        const ws = WaveSurfer.create({
+            container: `#${waveId}`,
+            waveColor: 'rgba(255, 255, 255, 0.15)',
+            progressColor: '#f6c000',
+            barWidth: 3,
+            barGap: 3,
+            barRadius: 4,
+            barAlign: 'center',
+            height: 80,
+            url: file // WaveSurfer handles the loading internally
+        });
+
+        // Playback Logic
+        btn.onclick = () => {
+            players.forEach(p => { if(p.ws !== ws) p.ws.pause(); });
+            ws.playPause();
+        };
+
+        ws.on('play', () => { btn.innerText = '⏸'; bindAnalyserHighFreq(ws); });
+        ws.on('pause', () => { btn.innerText = '▶'; docRoot.style.setProperty('--glow','0'); });
+        ws.on('finish', () => { btn.innerText = '▶'; });
+
+        // Favorite Logic
+        favBtn.onclick = () => {
+            if (musicCollection[assetId]) {
+                delete musicCollection[assetId];
+                favBtn.innerHTML = '<i class="far fa-star"></i>';
+            } else {
+                musicCollection[assetId] = { url: file, title: displayName };
+                favBtn.innerHTML = '<i class="fas fa-star"></i>';
+            }
+            localStorage.setItem(COLLECTION_KEY_MUSIC, JSON.stringify(musicCollection));
+        };
+
+        players.push({ws, pp:btn});
+    }
+
+    // 4. Analyser for the "Glow" effect
+    let analyserRAF = null;
+    function bindAnalyserHighFreq(ws) {
+        const analyser = ws.decodedData ? ws.options.mediaContext.analyser : null;
+        if(!analyser) return;
+        const data = new Uint8Array(analyser.frequencyBinCount);
+        const tick = () => {
+            if(!ws.isPlaying()) return;
+            analyser.getByteFrequencyData(data);
+            const avg = data.reduce((a, b) => a + b) / data.length;
+            docRoot.style.setProperty('--glow', (avg / 140).toFixed(3));
+            analyserRAF = requestAnimationFrame(tick);
+        };
+        tick();
+    }
+
+    // Initialize the grid
+    Object.entries(mashupConfig).forEach(([file, name]) => {
+        createTrackCard("mashup", file, name, mashupGrid);
+    });
+</script>
+</body>
+</html>
